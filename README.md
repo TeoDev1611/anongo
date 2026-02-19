@@ -6,6 +6,14 @@ in **Go**. It creates a transparent anonymity layer by forcing all system
 network traffic through the Tor network, implementing advanced anti-leak
 protections and forensic cleaning.
 
+## 🌟 Why the Go Port? (Advantages over Python)
+
+- **Parallel Execution:** Leverages Go's Goroutines to run the network watchdog, ARP monitor, and Tor manager concurrently with minimal overhead.
+- **Enhanced Cryptography:** Upgraded from AES-CBC to **AES-256-GCM**, providing authenticated encryption and better resistance against data tampering.
+- **Static Binary:** No need for a Python interpreter or complex `pip` dependencies; just a single, fast-executing binary.
+- **Lower Resource Footprint:** Significantly more efficient memory and CPU usage compared to the original Python implementation.
+- **Robust Network Handling:** Uses `gopacket` for low-level network monitoring, which is faster and more reliable than Scapy.
+
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange.svg?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/teodev1611)
 
 ## 🚀 How it Works
@@ -13,18 +21,26 @@ protections and forensic cleaning.
 Anongo creates a "Ghost Tunnel" using a combination of **Tor's Transparent
 Proxy** and **Surgical Iptables Redirection**:
 
-1. **Network Shielding:** It creates custom `iptables` chains to redirect all
+1. **Network Shielding:** It creates custom `iptables` chains (`ANONGO_NAT` and `ANONGO_FILTER`) to redirect all
    TCP traffic to Tor's `TransPort` (9040) and DNS traffic to `DNSPort` (5353).
-2. **Anti-Leak Engine:** It automatically disables IPv6 (a common source of
-   leaks) and blocks non-Tor UDP traffic (preventing protocols like QUIC from
-   bypassing the proxy).
-3. **Privilege Dropping:** Tor is executed under a specific system user (`tor`
-   or `debian-tor`). This allows Anongo to tell `iptables`: "Redirect everything
-   EXCEPT the traffic coming from the Tor user," preventing infinite traffic
-   loops.
+2. **Anti-Leak Engine:** 
+   - **IPv6 Killswitch:** Automatically drops all IPv6 traffic to prevent common leaks.
+   - **UDP Filtering:** Blocks non-Tor UDP traffic (e.g., QUIC, STUN) while allowing DNS redirection.
+   - **LAN Exemption:** Automatically detects and excludes local networks (127.0.0.1, 192.168.x.x, etc.) so you don't lose access to your local router or devices.
+3. **Privilege Dropping:** Tor is executed under a specific system user (`tor` or `debian-tor`). This allows Anongo to tell `iptables`: "Redirect everything EXCEPT the traffic coming from the Tor user," preventing infinite traffic loops.
 4. **Watchdog Monitoring:** A background goroutine verifies connection integrity
    every 15 seconds. If rules are deleted or the IP leaks, it instantly
    reapplies the shield.
+
+## 🏗️ Technical Architecture
+
+The project is organized into modular packages to ensure maintainability and high performance:
+
+- **`pkg/network`**: Manages `iptables` rules, IPv6 disabling, and the network Watchdog.
+- **`pkg/tor`**: Handles the lifecycle of the Tor process, identity switching, and circuit health.
+- **`pkg/security`**: Implements anti-forensics measures (RAM wiping, history truncation, log cleaning).
+- **`pkg/crypto`**: Provides high-grade encryption for local data (AES-256-GCM).
+- **`pkg/i18n`**: Multi-language support (English/Spanish).
 
 ## 🛠️ Requirements & Dependencies
 
@@ -60,17 +76,20 @@ The project leverages these libraries:
 
 ## 🎮 Usage
 
-Anongo requires **root** privileges to manage network interfaces.
+Anongo requires **root** privileges to manage network interfaces and process state.
+
+### Command Line Flags
+
+| Flag | Description | Default |
+| :--- | :--- | :--- |
+| `-lang` | Set the interface language (`en` or `es`). | `es` |
+| `-logs` | Enable logging the session output to `anongo_session.log`. | `false` |
+
+### Basic Execution
 
 ```bash
-# Basic run (Spanish by default)
-sudo ./anongo
-
-# Run in English
-sudo ./anongo -lang en
-
-# Run with logging enabled
-sudo ./anongo -logs
+# Run in English with logs enabled
+sudo ./anongo -lang en -logs
 ```
 
 ### Menu Options
@@ -81,17 +100,21 @@ sudo ./anongo -logs
 - **Change Identity:** Restarts Tor circuits to obtain a new public IP.
 - **Detailed Check:** Displays a table comparing your public vs. encrypted
   interface.
-- **Anti-Forensics:** Wipes system traces and clears RAM caches.
+- **Anti-Forensics:** Wipes system traces, clears RAM caches (`drop_caches`), and truncates bash/zsh history.
 - **Emergency Cleanup:** Failsafe option to force-restore all settings.
 
 ## 🔒 Security Features
 
-- **Surgical Iptables:** Uses `ANONGO_NAT` and `ANONGO_FILTER` chains. It won't
-  break your existing firewall.
-- **Memory Safety:** Written in Go, providing better memory management than the
-  original Python version.
-- **Forensic Cleaning:** Clears `drop_caches` and session logs to minimize the
-  footprint left on the machine.
+- **Surgical Iptables:** Uses isolated chains. It won't interfere with your custom firewall rules.
+- **Memory Safety:** Written in Go, eliminating buffer overflow risks present in C-based alternatives.
+- **Anti-Forensics:** Clears `/proc/sys/vm/drop_caches`, system logs (`auth.log`, `syslog`), and session histories to minimize the forensic footprint.
+
+## ⚠️ Security Disclaimer
+
+**Anongo is a tool for security research and privacy.** While it provides strong anonymity, no tool is 100% foolproof. 
+- Using this tool does not make you immune to fingerprinting or application-level leaks (e.g., browser plugins).
+- Always use a privacy-hardened browser (like Tor Browser) even when the tunnel is active.
+- **The developers are not responsible for any misuse or damages caused by this tool.**
 
 ## ☕ Support
 
