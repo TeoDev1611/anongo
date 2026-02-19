@@ -1,7 +1,5 @@
 package i18n
 
-import "fmt"
-
 type Translation struct {
 	AppDescription  string
 	StatusLabel     string
