@@ -1,6 +1,9 @@
 # Anongo 👻
 
-**Anongo** (Go Ghost) is a high-performance, security-focused port of **AnonGT** (originally in Python) rewritten in **Go**. It creates a transparent anonymity layer by forcing all system network traffic through the Tor network, implementing advanced anti-leak protections and forensic cleaning.
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange.svg?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/teodev1611)
+
+**Anongo** (Go Ghost) is a high-performance, security-focused port of [**AnonGT**](https://github.com/gt0day/AnonGT) (originally in Python by **gt0day**) rewritten in **Go**. It creates a transparent anonymity layer by forcing all system network traffic through the Tor network, implementing advanced anti-leak protections and forensic cleaning.
+
 
 ## 🚀 How it Works
 
@@ -65,6 +68,12 @@ sudo ./anongo -logs
 - **Surgical Iptables:** Uses `ANONGO_NAT` and `ANONGO_FILTER` chains. It won't break your existing firewall.
 - **Memory Safety:** Written in Go, providing better memory management than the original Python version.
 - **Forensic Cleaning:** Clears `drop_caches` and session logs to minimize the footprint left on the machine.
+
+## ☕ Support
+
+If you find **Anongo** useful and want to support its development, you can buy me a coffee!
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange.svg?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/teodev1611)
 
 ## 📄 License
 This project is licensed under the **GPL v3 License**.
