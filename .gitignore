@@ -1,0 +1,13 @@
+# Binarios
+/anongo
+/anongo_session.log
+
+# Directorios temporales
+/tmp/tor_anongo
+
+# Go
+/vendor/
+/bin/
+*.exe
+*.test
+*.out
