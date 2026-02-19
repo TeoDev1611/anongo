@@ -1,6 +1,6 @@
 # Anongo 👻
 
-**Anongo** (Go Ghost) is a high-performance, security-focused port of **AnonGT** (originally in Python) rewritten in **Go**. It creates a transparent anonymity layer by forcing all system network traffic through the Tor network, implementing advanced anti-leak protections and forensic cleaning.
+**Anongo** (Go Ghost) is a high-performance, security-focused port of [**AnonGT**](https://github.com/gt0day/AnonGT) (originally in Python) rewritten in **Go**. It creates a transparent anonymity layer by forcing all system network traffic through the Tor network, implementing advanced anti-leak protections and forensic cleaning.
 
 ## 🚀 How it Works
 
